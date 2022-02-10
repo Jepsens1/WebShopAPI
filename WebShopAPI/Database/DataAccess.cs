@@ -9,47 +9,47 @@ namespace WebShopAPI.Database
         MySqlDataReader reader;
         const string ConnectionString = "Server=localhost;Database=angularwebshop;Uid=root;Pwd=Kode0911;";
 
-        public List<Product> GetProducts(List<Product> products)
-        {
-            try
-            {
-                conn = new MySqlConnection(ConnectionString);
-                conn.Open();
-                cmd = new MySqlCommand("", conn);
-                reader = cmd.ExecuteReader();
-                while (reader.Read())
-                {
-                    products.Add(new Product());
-                }
-                conn.Close();
-                return products;
+        //public List<Product> GetProducts(List<Product> products)
+        //{
+        //    try
+        //    {
+        //        conn = new MySqlConnection(ConnectionString);
+        //        conn.Open();
+        //        cmd = new MySqlCommand("", conn);
+        //        reader = cmd.ExecuteReader();
+        //        while (reader.Read())
+        //        {
+        //            products.Add(new Product());
+        //        }
+        //        conn.Close();
+        //        return products;
 
-            }
-            catch (Exception)
-            {
+        //    }
+        //    catch (Exception)
+        //    {
 
-                throw new Exception();
-            }
-        }
-        public Product GetProductById(int id)
-        {
-            try
-            {
-                conn = new MySqlConnection(ConnectionString);
-                conn.Open();
-                cmd = new MySqlCommand("", conn);
-                reader = cmd.ExecuteReader();
-                reader.Read();
-                Product product = new Product();
-                conn.Close();
-                return product;
-            }
-            catch (Exception)
-            {
+        //        throw new Exception();
+        //    }
+        //}
+        //public Product GetProductById(int id)
+        //{
+        //    try
+        //    {
+        //        conn = new MySqlConnection(ConnectionString);
+        //        conn.Open();
+        //        cmd = new MySqlCommand("", conn);
+        //        reader = cmd.ExecuteReader();
+        //        reader.Read();
+        //        Product product = new Product();
+        //        conn.Close();
+        //        return product;
+        //    }
+        //    catch (Exception)
+        //    {
 
-                throw new Exception();
-            }
-        }
+        //        throw new Exception();
+        //    }
+        //}
         public void RegisterCustomer(Customer customer, string salt)
         {
             try
@@ -67,6 +67,27 @@ namespace WebShopAPI.Database
                 cmd.Parameters.AddWithValue("@phonenumber", customer.PhoneNumber);
                 cmd.ExecuteNonQuery();
                 conn.Close();
+            }
+            catch (Exception)
+            {
+
+                throw new Exception();
+            }
+        }
+        public bool CheckIfUserAlreadyExist(string username)
+        {
+            try
+            {
+                conn = new MySqlConnection(ConnectionString);
+                conn.Open();
+                cmd = new MySqlCommand("CALL sp_CheckIfUserExist(@username)", conn);
+                cmd.Parameters.AddWithValue("@username", username);
+                reader = cmd.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    return true;
+                }
+                return false;
             }
             catch (Exception)
             {

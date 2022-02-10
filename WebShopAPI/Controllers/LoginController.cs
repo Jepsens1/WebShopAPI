@@ -15,8 +15,7 @@ namespace WebShopAPI.Controllers
         {
             try
             {
-                loginManager.SignUp(customer);
-                return Ok("User was made");
+                return Ok(loginManager.SignUp(customer));
             }
             catch (Exception e)
             {

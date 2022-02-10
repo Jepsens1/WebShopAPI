@@ -8,26 +8,47 @@ namespace WebShopAPI.Managers
     public class LoginManager
     {
         DataAccess dataAccess = new DataAccess();
-        public void SignUp(Customer customer)
+        public string SignUp(Customer customer)
         {
-            string salt = Convert.ToBase64String(GenerateSalt());
-            customer.Password = Convert.ToBase64String(HashPassWordWithSalt(Encoding.UTF8.GetBytes(salt), Encoding.UTF8.GetBytes(customer.Password)));
-            dataAccess.RegisterCustomer(customer, salt);
+            try
+            {
+                if (dataAccess.CheckIfUserAlreadyExist(customer.Username))
+                    return "User already exist";
+
+                string salt = Convert.ToBase64String(GenerateSalt());
+                customer.Password = Convert.ToBase64String(HashPassWordWithSalt(Encoding.UTF8.GetBytes(salt), Encoding.UTF8.GetBytes(customer.Password)));
+                dataAccess.RegisterCustomer(customer, salt);
+                return "User Created";
+            }
+            catch (Exception)
+            {
+
+                throw new Exception();
+            }
         }
 
         public string LoginValidate(string username, string password)
         {
-            Customer customer = dataAccess.Login(username);
-            if (customer == null)
+            try
             {
-                return "User not found";
+                Customer customer = dataAccess.Login(username);
+                if (customer == null)
+                {
+                    return "User not found";
+                }
+                string saltpassword = Convert.ToBase64String(HashPassWordWithSalt(Encoding.UTF8.GetBytes(customer.PasswordSalt), Encoding.UTF8.GetBytes(password)));
+                if (customer.Password == saltpassword)
+                {
+                    return "Login Success";
+                }
+                return "Wrong Username or Password";
             }
-            string saltpassword = Convert.ToBase64String(HashPassWordWithSalt(Encoding.UTF8.GetBytes(customer.PasswordSalt), Encoding.UTF8.GetBytes(password)));
-            if (customer.Password == saltpassword)
+            catch (Exception)
             {
-                return "Login Success";
+
+                throw new Exception();
             }
-            return "Wrong Username or Password";
+            
         }
         private byte[] GenerateSalt()
         {
