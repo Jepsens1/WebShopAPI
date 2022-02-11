@@ -9,47 +9,49 @@ namespace WebShopAPI.Database
         MySqlDataReader reader;
         const string ConnectionString = "Server=localhost;Database=angularwebshop;Uid=root;Pwd=Kode0911;";
 
-        //public List<Product> GetProducts(List<Product> products)
-        //{
-        //    try
-        //    {
-        //        conn = new MySqlConnection(ConnectionString);
-        //        conn.Open();
-        //        cmd = new MySqlCommand("", conn);
-        //        reader = cmd.ExecuteReader();
-        //        while (reader.Read())
-        //        {
-        //            products.Add(new Product());
-        //        }
-        //        conn.Close();
-        //        return products;
+        public List<Product> GetProducts(List<Product> products)
+        {
+            try
+            {
+                conn = new MySqlConnection(ConnectionString);
+                conn.Open();
+                cmd = new MySqlCommand("CALL sp_GetAllProduct()", conn);
+                reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    products.Add(new Product((int)reader["product_id"], (string)reader["product_name"],
+                        (int)reader["product_price"], (int)reader["product_quantity"], (string)reader["product_identifier"]));
+                }
+                conn.Close();
+                return products;
 
-        //    }
-        //    catch (Exception)
-        //    {
+            }
+            catch (Exception)
+            {
 
-        //        throw new Exception();
-        //    }
-        //}
-        //public Product GetProductById(int id)
-        //{
-        //    try
-        //    {
-        //        conn = new MySqlConnection(ConnectionString);
-        //        conn.Open();
-        //        cmd = new MySqlCommand("", conn);
-        //        reader = cmd.ExecuteReader();
-        //        reader.Read();
-        //        Product product = new Product();
-        //        conn.Close();
-        //        return product;
-        //    }
-        //    catch (Exception)
-        //    {
+                throw new Exception();
+            }
+        }
+        public Product GetProductById(int id)
+        {
+            try
+            {
+                conn = new MySqlConnection(ConnectionString);
+                conn.Open();
+                cmd = new MySqlCommand("sp_GetProductById(@id)", conn);
+                cmd.Parameters.AddWithValue("@id", id);
+                reader = cmd.ExecuteReader();
+                reader.Read();
+                Product product = new Product((int)reader["product_id"], (string)reader["product_name"], (int)reader["product_price"], (int)reader["product_quantity"], (string)reader["product_identifier"]);
+                conn.Close();
+                return product;
+            }
+            catch (Exception)
+            {
 
-        //        throw new Exception();
-        //    }
-        //}
+                throw new Exception();
+            }
+        }
         public void RegisterCustomer(Customer customer, string salt)
         {
             try
