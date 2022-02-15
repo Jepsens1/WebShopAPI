@@ -52,6 +52,69 @@ namespace WebShopAPI.Database
                 throw new Exception();
             }
         }
+        public void PostToken(string token, string username)
+        {
+            try
+            {
+                int id = GetCustomerIdFromUsername(username);
+                conn = new MySqlConnection(ConnectionString);
+                conn.Open();
+                cmd = new MySqlCommand("CALL sp_postsessiontoken(@id, @token)", conn);
+                cmd.Parameters.AddWithValue("@token", token);
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.ExecuteNonQuery();
+                conn.Close();
+            }
+            catch (Exception)
+            {
+
+                throw new Exception();
+            }
+        }
+        private int GetCustomerIdFromUsername(string username)
+        {
+            try
+            {
+                conn = new MySqlConnection(ConnectionString);
+                conn.Open();
+                cmd = new MySqlCommand("CALL sp_getcustomeridtosession(@username)", conn);
+                cmd.Parameters.AddWithValue("@username", username);
+                reader = cmd.ExecuteReader();
+                reader.Read();
+                int result = (int)reader["customer_id"];
+                conn.Close();
+                return result;
+            }
+            catch (Exception)
+            {
+
+                throw new Exception();
+            }
+        }
+        public bool SelectToken(string token)
+        {
+            try
+            {
+                conn = new MySqlConnection(ConnectionString);
+                conn.Open();
+                cmd = new MySqlCommand("call sp_validatetoken(@token)", conn);
+                cmd.Parameters.AddWithValue("@token", token);
+                reader = cmd.ExecuteReader();
+                reader.Read();
+                if (reader.HasRows)
+                {
+                    conn.Close();
+                    return true;
+                }
+                conn.Close();
+                return false;
+            }
+            catch (Exception)
+            {
+
+                throw new Exception();
+            }
+        }
         public void RegisterCustomer(Customer customer, string salt)
         {
             try

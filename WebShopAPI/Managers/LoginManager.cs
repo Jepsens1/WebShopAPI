@@ -2,16 +2,18 @@
 using WebShopAPI.Database;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace WebShopAPI.Managers
 {
     public class LoginManager
     {
-        DataAccess dataAccess = new DataAccess();
+        DataAccess dataAccess;
         public string SignUp(Customer customer)
         {
             try
             {
+                dataAccess = new DataAccess();
                 if (dataAccess.CheckIfUserAlreadyExist(customer.Username))
                     return "User already exist";
 
@@ -31,6 +33,7 @@ namespace WebShopAPI.Managers
         {
             try
             {
+                dataAccess = new DataAccess();
                 Customer customer = dataAccess.Login(username);
                 if (customer == null)
                 {
@@ -74,5 +77,6 @@ namespace WebShopAPI.Managers
 
             return ret;
         }
+       
     }
 }
