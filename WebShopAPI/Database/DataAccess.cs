@@ -8,8 +8,14 @@ namespace WebShopAPI.Database
         MySqlCommand cmd;
         MySqlDataReader reader;
         const string ConnectionString = "Server=localhost;Database=angularwebshop;Uid=root;Pwd=Kode0911;";
+        /// <summary>
+        /// Gets all the products from the database and adds to a list which we will return
+        /// </summary>
+        /// <param name="products"></param>
+        /// <returns>Returns a list of products</returns>
+        /// <exception cref="Exception"></exception>
         public List<Product> GetProducts(List<Product> products)
-        {
+        { 
             try
             {
                 conn = new MySqlConnection(ConnectionString);
@@ -31,6 +37,14 @@ namespace WebShopAPI.Database
                 throw new Exception();
             }
         }
+
+        /// <summary>
+        /// Returns a product we find by a id
+        /// Returns the product
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Returns a product</returns>
+        /// <exception cref="Exception"></exception>
         public Product GetProductById(int id)
         {
             try
@@ -51,69 +65,14 @@ namespace WebShopAPI.Database
                 throw new Exception();
             }
         }
-        public void PostToken(string token, string username)
-        {
-            try
-            {
-                int id = GetCustomerIdFromUsername(username);
-                conn = new MySqlConnection(ConnectionString);
-                conn.Open();
-                cmd = new MySqlCommand("CALL sp_postsessiontoken(@id, @token)", conn);
-                cmd.Parameters.AddWithValue("@token", token);
-                cmd.Parameters.AddWithValue("@id", id);
-                cmd.ExecuteNonQuery();
-                conn.Close();
-            }
-            catch (Exception)
-            {
 
-                throw new Exception();
-            }
-        }
-        private int GetCustomerIdFromUsername(string username)
-        {
-            try
-            {
-                conn = new MySqlConnection(ConnectionString);
-                conn.Open();
-                cmd = new MySqlCommand("CALL sp_getcustomeridtosession(@username)", conn);
-                cmd.Parameters.AddWithValue("@username", username);
-                reader = cmd.ExecuteReader();
-                reader.Read();
-                int result = (int)reader["customer_id"];
-                conn.Close();
-                return result;
-            }
-            catch (Exception)
-            {
-
-                throw new Exception();
-            }
-        }
-        public bool SelectToken(string token)
-        {
-            try
-            {
-                conn = new MySqlConnection(ConnectionString);
-                conn.Open();
-                cmd = new MySqlCommand("call sp_validatetoken(@token)", conn);
-                cmd.Parameters.AddWithValue("@token", token);
-                reader = cmd.ExecuteReader();
-                reader.Read();
-                if (reader.HasRows)
-                {
-                    conn.Close();
-                    return true;
-                }
-                conn.Close();
-                return false;
-            }
-            catch (Exception)
-            {
-
-                throw new Exception();
-            }
-        }
+        /// <summary>
+        /// We get the user information from the angular page and inserts to the database, password is hashed from the loginmanager and we insert it to the database
+        /// the salt parameter is also from loginmanager, we will store, so we can validate login credentials
+        /// </summary>
+        /// <param name="customer"></param>
+        /// <param name="salt"></param>
+        /// <exception cref="Exception"></exception>
         public void RegisterCustomer(Customer customer, string salt)
         {
             try
@@ -138,6 +97,14 @@ namespace WebShopAPI.Database
                 throw new Exception();
             }
         }
+
+        /// <summary>
+        /// This method checks to see if a user with the username already exists in the database. Returns false if a user with the given username doenst not exists
+        /// Returns true if a user already exists with that username
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public bool CheckIfUserAlreadyExist(string username)
         {
             try
@@ -159,6 +126,12 @@ namespace WebShopAPI.Database
                 throw new Exception();
             }
         }
+        /// <summary>
+        /// Gets the username and password, from a username, if the database has rows we will return the customer with the data, else returns null
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public Customer Login(string username)
         {
             try
@@ -184,6 +157,13 @@ namespace WebShopAPI.Database
             }
 
         }
+
+        /// <summary>
+        /// Returns the salt we stored from a user, will be used to validate a userlogin
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public string GetCustomerSalt(string username)
         {
             try

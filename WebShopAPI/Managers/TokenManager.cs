@@ -6,6 +6,13 @@ namespace WebShopAPI.Managers
 {
     public class TokenManager
     {
+        /// <summary>
+        /// This method generates a jwt token that we will be used on angular
+        /// the token will expire after 15 minuted
+        /// </summary>
+        /// <param name="customer"></param>
+        /// <returns>Returns the token</returns>
+        /// <exception cref="Exception"></exception>
         public string CreateSessionToken(Customer customer)
         {
             try

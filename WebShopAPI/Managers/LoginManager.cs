@@ -10,6 +10,14 @@ namespace WebShopAPI.Managers
     {
         DataAccess dataAccess;
         TokenManager tokenManager;
+        /// <summary>
+        /// Checks to see if a user with that username already exist in the database
+        /// if username does not exist, we start generate salt, and hash password the generated salt, and register the user in database
+        /// Sets the customer password to the new hashed password
+        /// </summary>
+        /// <param name="customer"></param>
+        /// <returns>Returns if a user is created or not</returns>
+        /// <exception cref="Exception"></exception>
         public string SignUp(Customer customer)
         {
             try
@@ -29,7 +37,16 @@ namespace WebShopAPI.Managers
                 throw new Exception();
             }
         }
-
+        /// <summary>
+        /// Gets the user from database, if user is null, means that the user is not found
+        /// if found, we will hash password with salt, we get the salt from the user in database
+        /// Checks to see if the password we got from user in database, is equal to the password we just hashed
+        /// if true we create a jwt token, else returns wrong password or username
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <returns>Return token, not found or wrong credentials</returns>
+        /// <exception cref="Exception"></exception>
         public string LoginValidate(string username, string password)
         {
             try
@@ -55,6 +72,11 @@ namespace WebShopAPI.Managers
             }
 
         }
+
+        /// <summary>
+        /// Generate a randon salt
+        /// </summary>
+        /// <returns>Returns a byte array with a random salt</returns>
         private byte[] GenerateSalt()
         {
             using (RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider())
@@ -64,6 +86,12 @@ namespace WebShopAPI.Managers
                 return data;
             };
         }
+        /// <summary>
+        /// Uses sha256 to hash, the salt parameter comes from GenerateSalt Method and password from the userinput
+        /// </summary>
+        /// <param name="salt"></param>
+        /// <param name="password"></param>
+        /// <returns>Byte array with new password that is hashed</returns>
         private byte[] HashPassWordWithSalt(byte[] salt, byte[] password)
         {
             using (SHA256 sha256 = SHA256.Create())
