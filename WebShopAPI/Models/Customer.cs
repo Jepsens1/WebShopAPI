@@ -4,7 +4,6 @@
     {
         public string Username { get; set; }
         public string Password { get; set; }
-        public string PasswordSalt { get; set; }
         public string Firstname { get; set; }
         public string Lastname { get; set; }
         public string Email { get; set; }
@@ -13,12 +12,6 @@
         public Customer()
         {
 
-        }
-        public Customer(string username, string password, string passwordSalt)
-        {
-            Username = username;
-            Password = password;
-            PasswordSalt = passwordSalt;
         }
         public Customer(string username, string password, string Fname, string Lname, string email, string address, string phone)
         {
@@ -29,6 +22,11 @@
             Email = email;
             Address = address;
             PhoneNumber = phone;
+        }
+        public Customer(string username, string password)
+        {
+            Username = username;
+            Password = password;
         }
 
     }

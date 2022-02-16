@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebShopAPI.Models;
 using WebShopAPI.Managers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebShopAPI.Controllers
 {
@@ -9,6 +10,7 @@ namespace WebShopAPI.Controllers
     public class LoginController : Controller
     {
         LoginManager loginManager = new LoginManager();
+
         [Route("/Signup")]
         [HttpPost]
         public IActionResult SignUp(Customer customer)

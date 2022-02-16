@@ -1,42 +1,28 @@
-﻿using System.Text.RegularExpressions;
+﻿using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using WebShopAPI.Models;
-using WebShopAPI.Database;
 namespace WebShopAPI.Managers
 {
     public class TokenManager
     {
-        DataAccess dataAccess;
-        public SessionToken CreateSessionToken(string username)
+        public string CreateSessionToken(Customer customer)
         {
             try
             {
-                dataAccess = new DataAccess();
-                string token = "";
-                for (int i = 0; i < 5; i++)
+                List<Claim> claimss = new List<Claim>
                 {
-                    token += Convert.ToBase64String(Guid.NewGuid().ToByteArray());
-                }
-                token = Regex.Replace(token, @"[^0-9a-zA-Z]+", "");
-                dataAccess.PostToken(token, username);
-                return new SessionToken(token);
-            }
-            catch (Exception)
-            {
+                    new Claim(ClaimTypes.Name, customer.Username)
+                };
+                SymmetricSecurityKey key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("DhftOS5uphK3vmCJQrexST1RsyjZBjXWRgJMFPU4"));
+                SigningCredentials cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
-                throw new Exception();
-            }
-           
-        }
-        public bool CheckIfTokenExist(string token)
-        {
-            dataAccess = new DataAccess();
-            try
-            {
-                if (dataAccess.SelectToken(token))
-                {
-                    return true;
-                }
-                return false;
+                JwtSecurityToken token = new JwtSecurityToken(
+                    claims: claimss,
+                    expires: DateTime.UtcNow.AddMinutes(15),
+                    signingCredentials: cred);
+
+                return new JwtSecurityTokenHandler().WriteToken(token);
             }
             catch (Exception)
             {

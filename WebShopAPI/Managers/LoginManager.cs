@@ -9,6 +9,7 @@ namespace WebShopAPI.Managers
     public class LoginManager
     {
         DataAccess dataAccess;
+        TokenManager tokenManager;
         public string SignUp(Customer customer)
         {
             try
@@ -39,10 +40,11 @@ namespace WebShopAPI.Managers
                 {
                     return "User not found";
                 }
-                string saltpassword = Convert.ToBase64String(HashPassWordWithSalt(Encoding.UTF8.GetBytes(customer.PasswordSalt), Encoding.UTF8.GetBytes(password)));
+                string saltpassword = Convert.ToBase64String(HashPassWordWithSalt(Encoding.UTF8.GetBytes(dataAccess.GetCustomerSalt(customer.Username)), Encoding.UTF8.GetBytes(password)));
                 if (customer.Password == saltpassword)
                 {
-                    return "Login Success";
+                    tokenManager = new TokenManager();
+                    return tokenManager.CreateSessionToken(customer);
                 }
                 return "Wrong Username or Password";
             }
@@ -51,7 +53,7 @@ namespace WebShopAPI.Managers
 
                 throw new Exception();
             }
-            
+
         }
         private byte[] GenerateSalt()
         {

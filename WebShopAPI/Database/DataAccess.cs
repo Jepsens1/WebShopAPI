@@ -8,7 +8,6 @@ namespace WebShopAPI.Database
         MySqlCommand cmd;
         MySqlDataReader reader;
         const string ConnectionString = "Server=localhost;Database=angularwebshop;Uid=root;Pwd=Kode0911;";
-
         public List<Product> GetProducts(List<Product> products)
         {
             try
@@ -172,7 +171,7 @@ namespace WebShopAPI.Database
                 if (reader.HasRows)
                 {
                     reader.Read();
-                    Customer customer = new Customer((string)reader["customer_username"], (string)reader["customer_password"], (string)reader["customer_passwordSalt"]);
+                    Customer customer = new Customer((string)reader["customer_username"], (string)reader["customer_password"]);
                     conn.Close();
                     return customer;
                 }
@@ -184,6 +183,26 @@ namespace WebShopAPI.Database
                 throw new Exception();
             }
 
+        }
+        public string GetCustomerSalt(string username)
+        {
+            try
+            {
+                conn = new MySqlConnection(ConnectionString);
+                conn.Open();
+                cmd = new MySqlCommand("SELECT customer_passwordSalt FROM customer where customer_username = @username", conn);
+                cmd.Parameters.AddWithValue("@username", username);
+                reader = cmd.ExecuteReader();
+                reader.Read();
+                string result = (string)reader["customer_passwordSalt"];
+                conn.Close();
+                return result;
+            }
+            catch (Exception)
+            {
+
+                throw new Exception();
+            }
         }
     }
 }
